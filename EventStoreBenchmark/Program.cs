@@ -19,9 +19,16 @@ namespace EventStoreBenchmark
         private  EventStoreClient _client;
         private  EventData _eventData;
         private Guid _threadId;
-        private byte[] _serializedEvent;
-        private MessageSent _evt;
-        private byte[] _serializedData;
+        private byte[] _serializedData64;
+        private byte[] _serializedData128;
+        private byte[] _serializedData256;
+        private byte[] _serializedData512;
+        private byte[] _serializedData1024;
+        private byte[] _serializedData2048;
+        private byte[] _serializedData4196;
+        private byte[] _serializedData16384;
+        private byte[] _serializedData65536;
+        private byte[] _serializedData262144;
 
 
         [GlobalSetup]
@@ -29,15 +36,56 @@ namespace EventStoreBenchmark
         {
             _client = CreateClient();
             _threadId = Guid.NewGuid();
-            _evt = new MessageSent { Text = "TestText" };
-            _serializedData= JsonSerializer.SerializeToUtf8Bytes(_evt);
+            var ev = new MessageSent { Text = "" };
+
+            for (int index = 0; index < 262145; index++)
+            {
+                var serializedEvent = JsonSerializer.SerializeToUtf8Bytes(ev);
+                switch (serializedEvent.Length)
+                {
+                    case 64:
+                        _serializedData64 = serializedEvent;
+                        break;
+                    case 128:
+                        _serializedData128 = serializedEvent;
+                        break;
+                    case 256:
+                        _serializedData256 = serializedEvent;
+                        break;
+                    case 512:
+                        _serializedData512 = serializedEvent;
+                        break;
+                    case 1024:
+                        _serializedData1024 = serializedEvent;
+                        break;
+                    case 2048:
+                        _serializedData2048 = serializedEvent;
+                        break;
+                    case 4196:
+                        _serializedData4196 = serializedEvent;
+                        break;
+                    case 16384:
+                        _serializedData16384 = serializedEvent;
+                        break;
+                    case 65536:
+                        _serializedData65536 = serializedEvent;
+                        break;
+                    case 262144:
+                        _serializedData262144 = serializedEvent;
+                        break;
+                }
+            }
         }
-        [Benchmark()]
-        public async Task SendOneMessage() => await this.SendMessages();
+        [Benchmark]
+        public async Task Append64BytesEvent() => await this.AppendSerializedEventToExistingStream(_serializedData64);
 
+        [Benchmark]
+        public async Task Append1024BytesEvent() => await this.AppendSerializedEventToExistingStream(_serializedData1024);
 
+        [Benchmark]
+        public async Task Append262144BytesEvent() => await this.AppendSerializedEventToExistingStream(_serializedData262144);
 
-        public async Task SendMessages()
+        public async Task AppendSerializedEventToExistingStream(byte[] data)
         {
             await _client.AppendToStreamAsync(
                 $"Thread-{_threadId}",
@@ -46,7 +94,7 @@ namespace EventStoreBenchmark
                     new EventData(
                         Uuid.NewUuid(),
                         nameof(MessageSent),
-                        _serializedData)
+                        data)
                 }
                 
             );
@@ -67,10 +115,7 @@ namespace EventStoreBenchmark
     {
         static void Main(string[] args)
         {
-
-
               var summary = BenchmarkRunner.Run<SendMessagesBenchmark>();
-        
         }
 
 
