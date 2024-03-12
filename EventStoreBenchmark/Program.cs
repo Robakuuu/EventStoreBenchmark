@@ -33,47 +33,41 @@ namespace EventStoreBenchmark
         private string CreateStringWithSpecificLength(int length)
         {
             var str = "";
-            for (int i = 0; i < length; i++)
+            for (int i = 0; i < length; i+=8)
             {
-                str += "a";
+                str += "aaaaaaaa";
             }
             return str;
         }
 
-        public byte[] Get262144bytesEvent()
+
+        [GlobalSetup]
+        public void Setup()
         {
 
             _client = CreateClient();
             _threadId = Guid.NewGuid();
-            var ev = new MessageSent { Text = "aaaaaaaaa" }; // this ev weights 64 bytes;
-         
-            ev.Text += CreateStringWithSpecificLength(262144-64);
-            return JsonSerializer.SerializeToUtf8Bytes(ev);
+
+            _serializedData512 = GetSerializedEventWithSpecificSize(512);
+            _serializedData4196 = GetSerializedEventWithSpecificSize(4196);
+            _serializedData65536 = GetSerializedEventWithSpecificSize(65536);
+            _serializedData262144 = GetSerializedEventWithSpecificSize(262144);
         }
 
-        public byte[] Get4196bytesEvent()
+        private byte[] GetSerializedEventWithSpecificSize(int sizeInBytes)
         {
-
-            _client = CreateClient();
-            _threadId = Guid.NewGuid();
             var ev = new MessageSent { Text = "aaaaaaaaa" }; // this ev weights 64 bytes;
-
-            ev.Text += CreateStringWithSpecificLength(4196-64);
+            ev.Text += CreateStringWithSpecificLength(sizeInBytes - 64);
             return JsonSerializer.SerializeToUtf8Bytes(ev);
         }
 
-       // [Benchmark]
-       // [ArgumentsSource(nameof(Get262144bytesEvent))]
-       // [InvocationCount(10)]
-       // public async Task Append262144BytesEvent(byte[] serializedEvent) => await this.AppendSerializedEventToExistingStream(serializedEvent);
-
+     
        [Benchmark]
-       [ArgumentsSource(nameof(Get4196bytesEvent))]
-        public async Task Append4196BytesEvent(byte[] serializedEvent) => await this.AppendSerializedEventToExistingStream(serializedEvent);
-       //
-       //[Benchmark]
-       //public async Task Append65536BytesEvent() => await this.AppendSerializedEventToExistingStream(_serializedData65536);
-       //
+        public async Task Append4196BytesEvent() => await this.AppendSerializedEventToExistingStream(_serializedData4196);
+       
+       [Benchmark]
+       public async Task Append65536BytesEvent() => await this.AppendSerializedEventToExistingStream(_serializedData65536);
+       
        //[Benchmark]
        //[InvocationCount(10)]
        //public async Task Append262144BytesEvent() => await this.AppendSerializedEventToExistingStream(_serializedData262144);
