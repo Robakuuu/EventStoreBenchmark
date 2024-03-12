@@ -135,10 +135,8 @@ namespace EventStoreBenchmark
     {
         static void Main(string[] args)
         {
-            //var summary = BenchmarkRunner.Run<SendMessagesBenchmark>();
+            var summary = BenchmarkRunner.Run<SendMessagesBenchmark>();
 
-            SendMessagesBenchmark tmp = new SendMessagesBenchmark();
-            tmp.Setup();
         }
 
 
