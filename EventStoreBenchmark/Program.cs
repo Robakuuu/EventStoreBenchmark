@@ -51,13 +51,25 @@ namespace EventStoreBenchmark
             return JsonSerializer.SerializeToUtf8Bytes(ev);
         }
 
-        [Benchmark]
-        [ArgumentsSource(nameof(Get262144bytesEvent))]
-        [InvocationCount(10)]
-        public async Task Append262144BytesEvent(byte[] serializedEvent) => await this.AppendSerializedEventToExistingStream(serializedEvent);
+        public byte[] Get4196bytesEvent()
+        {
 
-       //[Benchmark]
-       //public async Task Append4196BytesEvent() => await this.AppendSerializedEventToExistingStream(_serializedData4196);
+            _client = CreateClient();
+            _threadId = Guid.NewGuid();
+            var ev = new MessageSent { Text = "aaaaaaaaa" }; // this ev weights 64 bytes;
+
+            ev.Text += CreateStringWithSpecificLength(4196-64);
+            return JsonSerializer.SerializeToUtf8Bytes(ev);
+        }
+
+       // [Benchmark]
+       // [ArgumentsSource(nameof(Get262144bytesEvent))]
+       // [InvocationCount(10)]
+       // public async Task Append262144BytesEvent(byte[] serializedEvent) => await this.AppendSerializedEventToExistingStream(serializedEvent);
+
+       [Benchmark]
+       [ArgumentsSource(nameof(Get4196bytesEvent))]
+        public async Task Append4196BytesEvent(byte[] serializedEvent) => await this.AppendSerializedEventToExistingStream(serializedEvent);
        //
        //[Benchmark]
        //public async Task Append65536BytesEvent() => await this.AppendSerializedEventToExistingStream(_serializedData65536);
