@@ -38,16 +38,18 @@ namespace EventStoreBenchmark
         public void SendMessages()
         {
             var evt = new MessageSent { Text = "TestText" };
-             _client.AppendToStreamAsync(
+            var task = _client.AppendToStreamAsync(
                 $"Thread-{_threadId}",
-                StreamState.Any, new []
+                StreamState.Any, new[]
                 {
                     new EventData(
                         Uuid.NewUuid(),
                         nameof(MessageSent),
                         JsonSerializer.SerializeToUtf8Bytes(evt))
                 }
+                
             );
+            task.Wait();
         }
         static EventStoreClient CreateClient()
         {
