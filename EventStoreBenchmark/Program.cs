@@ -7,6 +7,7 @@ using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Diagnosers;
 using BenchmarkDotNet.Exporters;
+using System.Reflection.Metadata.Ecma335;
 
 namespace EventStoreBenchmark
 {
@@ -44,67 +45,34 @@ namespace EventStoreBenchmark
         {
             _client = CreateClient();
             _threadId = Guid.NewGuid();
-            var ev = new MessageSent { Text = "" }; // ev weights 55 bytes
-            ev.Text += "aaaaaaaaa"; // now, ev weights 64 bytes
-
-            for (int index = 64; index < 33554433; index+=64)
-            {
-               
-                switch (index)
-                {
-                    case 128:
-                        _serializedData128 = JsonSerializer.SerializeToUtf8Bytes(ev);
-                        break;
-                    case 256:
-                        _serializedData256 = JsonSerializer.SerializeToUtf8Bytes(ev);
-                        break;
-                    case 512:
-                        _serializedData512 = JsonSerializer.SerializeToUtf8Bytes(ev);
-                        break;
-                    case 1024:
-                        _serializedData1024 = JsonSerializer.SerializeToUtf8Bytes(ev);
-                        break;
-                    case 2048:
-                        _serializedData2048 = JsonSerializer.SerializeToUtf8Bytes(ev);
-                        break;
-                    case 4196:
-                        _serializedData4196 = JsonSerializer.SerializeToUtf8Bytes(ev);
-                        break;
-                    case 16384:
-                        _serializedData16384 = JsonSerializer.SerializeToUtf8Bytes(ev);
-                        break;
-                    case 65536:
-                        _serializedData65536 = JsonSerializer.SerializeToUtf8Bytes(ev);
-                        break;
-                    case 262144:
-                        _serializedData262144 = JsonSerializer.SerializeToUtf8Bytes(ev);
-                        break;
-                    case 33554432:
-                        _serializedData33554432 = JsonSerializer.SerializeToUtf8Bytes(ev);
-                        break;
-
-                }
-                ev.Text += CreateStringWithSpecificLength(64);
-            }
         }
-     
+
+        public byte[] Get33554432bytesEvent()
+        {
+            var ev = new MessageSent { Text = "aaaaaaaaa" }; // this ev weights 64 bytes;
+         
+            ev.Text += CreateStringWithSpecificLength(33554432-64);
+            return JsonSerializer.SerializeToUtf8Bytes(ev);
+        }
 
         [Benchmark]
-        public async Task Append1024BytesEvent() => await this.AppendSerializedEventToExistingStream(_serializedData1024);
-
-        [Benchmark]
-        public async Task Append4196BytesEvent() => await this.AppendSerializedEventToExistingStream(_serializedData4196);
-
-        [Benchmark]
-        public async Task Append65536BytesEvent() => await this.AppendSerializedEventToExistingStream(_serializedData65536);
-
-        [Benchmark]
-        [InvocationCount(10)]
-        public async Task Append262144BytesEvent() => await this.AppendSerializedEventToExistingStream(_serializedData262144);
-
-        [Benchmark]
+        [ArgumentsSource(nameof(Get33554432bytesEvent))]
         [InvocationCount(1)]
-        public async Task Append33554432BytesEvent() => await this.AppendSerializedEventToExistingStream(_serializedData33554432);
+        public async Task Append33554432BytesEvent(byte[] serializedEvent) => await this.AppendSerializedEventToExistingStream(serializedEvent);
+
+       //[Benchmark]
+       //public async Task Append4196BytesEvent() => await this.AppendSerializedEventToExistingStream(_serializedData4196);
+       //
+       //[Benchmark]
+       //public async Task Append65536BytesEvent() => await this.AppendSerializedEventToExistingStream(_serializedData65536);
+       //
+       //[Benchmark]
+       //[InvocationCount(10)]
+       //public async Task Append262144BytesEvent() => await this.AppendSerializedEventToExistingStream(_serializedData262144);
+       //
+       //[Benchmark]
+       //[InvocationCount(1)]
+       //public async Task Append33554432BytesEvent() => await this.AppendSerializedEventToExistingStream(_serializedData33554432);
 
         public async Task AppendSerializedEventToExistingStream(byte[] data)
         {
