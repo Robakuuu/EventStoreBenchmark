@@ -33,9 +33,9 @@ namespace EventStoreBenchmark
         private string CreateStringWithSpecificLength(int length)
         {
             var str = "";
-            for (int i = 0; i < length; i+=8)
+            for (int i = 0; i < length; i+=64)
             {
-                str += "aaaaaaaa";
+                str += "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
             }
             return str;
         }
