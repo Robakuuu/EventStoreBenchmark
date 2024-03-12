@@ -19,7 +19,6 @@ namespace EventStoreBenchmark
         private  EventStoreClient _client;
         private  EventData _eventData;
         private Guid _threadId;
-        private byte[] _serializedData64;
         private byte[] _serializedData128;
         private byte[] _serializedData256;
         private byte[] _serializedData512;
@@ -29,62 +28,82 @@ namespace EventStoreBenchmark
         private byte[] _serializedData16384;
         private byte[] _serializedData65536;
         private byte[] _serializedData262144;
+        private byte[] _serializedData33554432; // it's above 30mb
 
+        private string CreateStringWithSpecificLength(int length)
+        {
+            var str = "";
+            for (int i = 0; i < length; i++)
+            {
+                str += "a";
+            }
+            return str;
+        }
 
         [GlobalSetup]
         public void Setup()
         {
             _client = CreateClient();
             _threadId = Guid.NewGuid();
-            var ev = new MessageSent { Text = "" };
+            var ev = new MessageSent { Text = "" }; // ev weights 55 bytes
+            ev.Text += "aaaaaaaaa"; // now, ev weights 64 bytes
 
-            for (int index = 1; index < 262145; index++)
+            for (int index = 64; index < 33554433; index+=64)
             {
-                ev.Text += "a";
-                var serializedEvent = JsonSerializer.SerializeToUtf8Bytes(ev);
-                switch (serializedEvent.Length)
+               
+                switch (index)
                 {
-                    case 64:
-                        _serializedData64 = serializedEvent;
-                        break;
                     case 128:
-                        _serializedData128 = serializedEvent;
+                        _serializedData128 = JsonSerializer.SerializeToUtf8Bytes(ev);
                         break;
                     case 256:
-                        _serializedData256 = serializedEvent;
+                        _serializedData256 = JsonSerializer.SerializeToUtf8Bytes(ev);
                         break;
                     case 512:
-                        _serializedData512 = serializedEvent;
+                        _serializedData512 = JsonSerializer.SerializeToUtf8Bytes(ev);
                         break;
                     case 1024:
-                        _serializedData1024 = serializedEvent;
+                        _serializedData1024 = JsonSerializer.SerializeToUtf8Bytes(ev);
                         break;
                     case 2048:
-                        _serializedData2048 = serializedEvent;
+                        _serializedData2048 = JsonSerializer.SerializeToUtf8Bytes(ev);
                         break;
                     case 4196:
-                        _serializedData4196 = serializedEvent;
+                        _serializedData4196 = JsonSerializer.SerializeToUtf8Bytes(ev);
                         break;
                     case 16384:
-                        _serializedData16384 = serializedEvent;
+                        _serializedData16384 = JsonSerializer.SerializeToUtf8Bytes(ev);
                         break;
                     case 65536:
-                        _serializedData65536 = serializedEvent;
+                        _serializedData65536 = JsonSerializer.SerializeToUtf8Bytes(ev);
                         break;
                     case 262144:
-                        _serializedData262144 = serializedEvent;
+                        _serializedData262144 = JsonSerializer.SerializeToUtf8Bytes(ev);
                         break;
+                    case 33554432:
+                        _serializedData33554432 = JsonSerializer.SerializeToUtf8Bytes(ev);
+                        break;
+
                 }
+                ev.Text += CreateStringWithSpecificLength(64);
             }
         }
-        [Benchmark]
-        public async Task Append64BytesEvent() => await this.AppendSerializedEventToExistingStream(_serializedData64);
+     
 
         [Benchmark]
         public async Task Append1024BytesEvent() => await this.AppendSerializedEventToExistingStream(_serializedData1024);
 
         [Benchmark]
+        public async Task Append4196BytesEvent() => await this.AppendSerializedEventToExistingStream(_serializedData4196);
+
+        [Benchmark]
+        public async Task Append65536BytesEvent() => await this.AppendSerializedEventToExistingStream(_serializedData65536);
+
+        [Benchmark]
         public async Task Append262144BytesEvent() => await this.AppendSerializedEventToExistingStream(_serializedData262144);
+
+        [Benchmark]
+        public async Task Append33554432BytesEvent() => await this.AppendSerializedEventToExistingStream(_serializedData33554432);
 
         public async Task AppendSerializedEventToExistingStream(byte[] data)
         {
@@ -116,7 +135,10 @@ namespace EventStoreBenchmark
     {
         static void Main(string[] args)
         {
-              var summary = BenchmarkRunner.Run<SendMessagesBenchmark>();
+            //var summary = BenchmarkRunner.Run<SendMessagesBenchmark>();
+
+            SendMessagesBenchmark tmp = new SendMessagesBenchmark();
+            tmp.Setup();
         }
 
 
