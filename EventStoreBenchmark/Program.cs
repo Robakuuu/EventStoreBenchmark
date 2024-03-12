@@ -40,15 +40,11 @@ namespace EventStoreBenchmark
             return str;
         }
 
-        [GlobalSetup]
-        public void Setup()
-        {
-            _client = CreateClient();
-            _threadId = Guid.NewGuid();
-        }
-
         public byte[] Get262144bytesEvent()
         {
+
+            _client = CreateClient();
+            _threadId = Guid.NewGuid();
             var ev = new MessageSent { Text = "aaaaaaaaa" }; // this ev weights 64 bytes;
          
             ev.Text += CreateStringWithSpecificLength(262144-64);
