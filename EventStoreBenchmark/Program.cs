@@ -33,7 +33,7 @@ namespace EventStoreBenchmark
             _serializedData= JsonSerializer.SerializeToUtf8Bytes(_evt);
         }
         [Benchmark()]
-        public async Task SendOneMessage() => this.SendMessages();
+        public async Task SendOneMessage() => await this.SendMessages();
 
 
 
