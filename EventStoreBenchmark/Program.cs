@@ -12,7 +12,7 @@ namespace EventStoreBenchmark
 {
   
     [JsonExporterAttribute.Full]
-    [MaxIterationCount(15)]
+    [MaxIterationCount(20)]
     public class SendMessagesBenchmark
     {
         private  string _topicId;
