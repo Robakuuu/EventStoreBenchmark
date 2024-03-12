@@ -38,8 +38,9 @@ namespace EventStoreBenchmark
             _threadId = Guid.NewGuid();
             var ev = new MessageSent { Text = "" };
 
-            for (int index = 0; index < 262145; index++)
+            for (int index = 1; index < 262145; index++)
             {
+                ev.Text += "a";
                 var serializedEvent = JsonSerializer.SerializeToUtf8Bytes(ev);
                 switch (serializedEvent.Length)
                 {
