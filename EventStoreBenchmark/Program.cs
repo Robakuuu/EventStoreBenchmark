@@ -12,28 +12,26 @@ namespace EventStoreBenchmark
         private  string _topicId;
         private  EventStoreClient _client;
         private  EventData _eventData;
-        private  EventData[] _1eventData;
-        private  EventData[] _2eventData;
-        private  EventData[] _5eventData;
-        private  EventData[] _10eventData;
-
+        private Guid _threadId;
+        private byte[] _serializedEvent;
 
 
         [GlobalSetup]
         public void Setup()
         {
             _client = CreateClient();
+            _threadId = Guid.NewGuid();
 
         }
         [Benchmark]
-        public async Task SendOneMessage() => this.SendMessages(_client, _topicId, _1eventData);
+        public async Task SendOneMessage() => this.SendMessages();
 
 
-        public async Task SendMessages(EventStoreClient client, string topicId, EventData[] eventData)
+        public async Task SendMessages()
         {
             var evt = new MessageSent { Text = "TestText" };
-            await client.AppendToStreamAsync(
-                $"Thread-{Guid.NewGuid()}",
+            await _client.AppendToStreamAsync(
+                $"Thread-{_threadId}",
                 StreamState.Any, new EventData[]
                 {
                     new EventData(
