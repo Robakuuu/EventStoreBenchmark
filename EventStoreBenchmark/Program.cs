@@ -20,36 +20,37 @@ namespace EventStoreBenchmark
         private  EventData _eventData;
         private Guid _threadId;
         private byte[] _serializedEvent;
+        private MessageSent _evt;
+        private byte[] _serializedData;
 
-   
 
         [GlobalSetup]
         public void Setup()
         {
             _client = CreateClient();
             _threadId = Guid.NewGuid();
-
+            _evt = new MessageSent { Text = "TestText" };
+            _serializedData= JsonSerializer.SerializeToUtf8Bytes(_evt);
         }
-        [Benchmark]
-        public void SendOneMessage() => this.SendMessages();
+        [Benchmark()]
+        public async Task SendOneMessage() => this.SendMessages();
 
-      
 
-        public void SendMessages()
+
+        public async Task SendMessages()
         {
-            var evt = new MessageSent { Text = "TestText" };
-            var task = _client.AppendToStreamAsync(
+            await _client.AppendToStreamAsync(
                 $"Thread-{_threadId}",
                 StreamState.Any, new[]
                 {
                     new EventData(
                         Uuid.NewUuid(),
                         nameof(MessageSent),
-                        JsonSerializer.SerializeToUtf8Bytes(evt))
+                        _serializedData)
                 }
                 
             );
-            task.Wait();
+            
         }
         static EventStoreClient CreateClient()
         {
