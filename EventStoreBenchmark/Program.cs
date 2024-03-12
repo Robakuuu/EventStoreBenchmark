@@ -22,52 +22,25 @@ namespace EventStoreBenchmark
         [GlobalSetup]
         public void Setup()
         {
-            _topicId = Guid.NewGuid().ToString();
-            string line = "";
-
             _client = CreateClient();
 
-
-            line = Guid.NewGuid().ToString();
-
-            var evt = new MessageSent { Text = line };
-
-            _eventData = new EventData(
-                Uuid.NewUuid(),
-                nameof(MessageSent),
-                JsonSerializer.SerializeToUtf8Bytes(evt)
-            );
-
-            List<EventData> data = new List<EventData>();
-            for (int index = 1; index <= 10; index++)
-            {
-                data.Add(_eventData);
-                if (data.Count==1) _1eventData = data.ToArray();
-                if (data.Count==2) _2eventData = data.ToArray();
-                if (data.Count==5) _5eventData = data.ToArray();
-                if (data.Count==10) _10eventData = data.ToArray();
-
-            }
         }
         [Benchmark]
         public async Task SendOneMessage() => this.SendMessages(_client, _topicId, _1eventData);
 
-       // [Benchmark]
-      //  public async Task SendTwoMessage() => this.SendMessages(_client, _topicId, _2eventData);
-
-      //  [Benchmark]
-      //  public async Task Send5Message() => this.SendMessages(_client, _topicId, _5eventData);
-
-     //   [Benchmark]
-     //   public async Task Send10Message() => this.SendMessages(_client, _topicId, _10eventData);
-
 
         public async Task SendMessages(EventStoreClient client, string topicId, EventData[] eventData)
         {
+            var evt = new MessageSent { Text = "TestText" };
             await client.AppendToStreamAsync(
-                $"Thread-{topicId}",
-                StreamState.Any,
-                eventData
+                $"Thread-{Guid.NewGuid()}",
+                StreamState.Any, new EventData[]
+                {
+                    new EventData(
+                        Uuid.NewUuid(),
+                        nameof(MessageSent),
+                        JsonSerializer.SerializeToUtf8Bytes(evt))
+                }
             );
         }
         static EventStoreClient CreateClient()
