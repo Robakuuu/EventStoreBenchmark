@@ -3,9 +3,14 @@ using System;
 using BenchmarkDotNet.Attributes;
 using EventStore.Client;
 using BenchmarkDotNet.Running;
+using BenchmarkDotNet.Jobs;
+using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Diagnosers;
+using BenchmarkDotNet.Exporters;
 
 namespace EventStoreBenchmark
 {
+  
     [JsonExporterAttribute.Full]
     public class SendMessagesBenchmark
     {
@@ -15,6 +20,7 @@ namespace EventStoreBenchmark
         private Guid _threadId;
         private byte[] _serializedEvent;
 
+   
 
         [GlobalSetup]
         public void Setup()
@@ -24,15 +30,16 @@ namespace EventStoreBenchmark
 
         }
         [Benchmark]
-        public async Task SendOneMessage() => this.SendMessages();
+        public void SendOneMessage() => this.SendMessages();
 
+      
 
-        public async Task SendMessages()
+        public void SendMessages()
         {
             var evt = new MessageSent { Text = "TestText" };
-            await _client.AppendToStreamAsync(
+             _client.AppendToStreamAsync(
                 $"Thread-{_threadId}",
-                StreamState.Any, new EventData[]
+                StreamState.Any, new []
                 {
                     new EventData(
                         Uuid.NewUuid(),
@@ -54,7 +61,7 @@ namespace EventStoreBenchmark
 
     internal class Program
     {
-        static async Task Main(string[] args)
+        static void Main(string[] args)
         {
 
 
