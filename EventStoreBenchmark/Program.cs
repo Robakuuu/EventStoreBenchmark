@@ -28,7 +28,7 @@ namespace EventStoreBenchmark
         private byte[] _serializedData16384;
         private byte[] _serializedData65536;
         private byte[] _serializedData262144;
-        private byte[] _serializedData33554432; // it's above 30mb
+        private byte[] _serializedData1048576; // it's 1mb
 
         private string CreateStringWithSpecificLength(int length)
         {
@@ -52,7 +52,7 @@ namespace EventStoreBenchmark
             _serializedData4196 = GetSerializedEventWithSpecificSize(4196);
             _serializedData65536 = GetSerializedEventWithSpecificSize(65536);
             _serializedData262144 = GetSerializedEventWithSpecificSize(262144);
-            _serializedData33554432 = GetSerializedEventWithSpecificSize(33554432);
+            _serializedData1048576 = GetSerializedEventWithSpecificSize(1048576);
         }
 
         private byte[] GetSerializedEventWithSpecificSize(int sizeInBytes)
@@ -76,7 +76,7 @@ namespace EventStoreBenchmark
         public async Task Append262144BytesEvent() => await this.AppendSerializedEventToExistingStream(_serializedData262144);
         [Benchmark]
         [InvocationCount(1)]
-        public async Task Append33554432BytesEvent() => await this.AppendSerializedEventToExistingStream(_serializedData33554432);
+        public async Task Append1048576BytesEvent() => await this.AppendSerializedEventToExistingStream(_serializedData1048576);
 
 
         public async Task AppendSerializedEventToExistingStream(byte[] data)
