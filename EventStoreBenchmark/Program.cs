@@ -12,7 +12,6 @@ namespace EventStoreBenchmark
 {
   
     [JsonExporterAttribute.Full]
-    [InvocationCount(100)]
     public class SendMessagesBenchmark
     {
         private  string _topicId;
@@ -100,9 +99,11 @@ namespace EventStoreBenchmark
         public async Task Append65536BytesEvent() => await this.AppendSerializedEventToExistingStream(_serializedData65536);
 
         [Benchmark]
+        [InvocationCount(10)]
         public async Task Append262144BytesEvent() => await this.AppendSerializedEventToExistingStream(_serializedData262144);
 
         [Benchmark]
+        [InvocationCount(1)]
         public async Task Append33554432BytesEvent() => await this.AppendSerializedEventToExistingStream(_serializedData33554432);
 
         public async Task AppendSerializedEventToExistingStream(byte[] data)
