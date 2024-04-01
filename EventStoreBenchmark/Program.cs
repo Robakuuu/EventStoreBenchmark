@@ -62,7 +62,9 @@ namespace EventStoreBenchmark
             return JsonSerializer.SerializeToUtf8Bytes(ev);
         }
 
-     
+        [Benchmark]
+        [InvocationCount(1)]
+        public async Task Append512BytesEvent() => await this.AppendSerializedEventToExistingStream(_serializedData512);
         [Benchmark]
         [InvocationCount(1)]
          public async Task Append4196BytesEvent() => await this.AppendSerializedEventToExistingStream(_serializedData4196);
