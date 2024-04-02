@@ -123,12 +123,8 @@ namespace EventStoreBenchmark
     {
         static void Main(string[] args)
         {
-            var summary = BenchmarkRunner.Run<SendMessagesBenchmark>();
+           BenchmarkRunner.Run<SendMessagesBenchmark>();
         }
-
-
-
-
 
     }
 }
