@@ -70,34 +70,34 @@ namespace EventStoreBenchmark
             return JsonSerializer.SerializeToUtf8Bytes(ev);
         }
 
-       // [Benchmark]
-        [InvocationCount(1)]
-        public async Task Append512BytesEvent() => await this.AppendSerializedEventToExistingStream(_serializedData512);
-       // [Benchmark]
-        [InvocationCount(1)]
-         public async Task Append4196BytesEvent() => await this.AppendSerializedEventToExistingStream(_serializedData4196);
-        
-       // [Benchmark]
-        [InvocationCount(1)]
-         public async Task Append65536BytesEvent() => await this.AppendSerializedEventToExistingStream(_serializedData65536);
-        
-       // [Benchmark]
-        [InvocationCount(1)]
-         public async Task Append262144BytesEvent() => await this.AppendSerializedEventToExistingStream(_serializedData262144);
-        // [Benchmark]
-         [InvocationCount(1)]
-         public async Task Append1048576BytesEvent() => await this.AppendSerializedEventToExistingStream(_serializedData1048576);
-       // [Benchmark]
-        [InvocationCount(1)]
-        public async Task Append2097152BytesEvent() => await this.AppendSerializedEventToExistingStream(_serializedData2097152);
-
-        //[Benchmark]
-        [InvocationCount(1)]
-        public async Task Append4194304BytesEvent() => await this.AppendSerializedEventToExistingStream(_serializedData4194304);
-
-        //[Benchmark]
-        [InvocationCount(1)]
-        public async Task Append8388608BytesEvent() => await this.AppendSerializedEventToExistingStream(_serializedData8388608);
+       /// [Benchmark]
+       //[InvocationCount(1)]
+       //public async Task Append512BytesEvent() => await this.AppendSerializedEventToExistingStream(_serializedData512);
+       /// [Benchmark]
+       //[InvocationCount(1)]
+       // public async Task Append4196BytesEvent() => await this.AppendSerializedEventToExistingStream(_serializedData4196);
+       //
+       /// [Benchmark]
+       //[InvocationCount(1)]
+       // public async Task Append65536BytesEvent() => await this.AppendSerializedEventToExistingStream(_serializedData65536);
+       //
+       /// [Benchmark]
+       //[InvocationCount(1)]
+       // public async Task Append262144BytesEvent() => await this.AppendSerializedEventToExistingStream(_serializedData262144);
+       //// [Benchmark]
+       // [InvocationCount(1)]
+       // public async Task Append1048576BytesEvent() => await this.AppendSerializedEventToExistingStream(_serializedData1048576);
+       /// [Benchmark]
+       //[InvocationCount(1)]
+       //public async Task Append2097152BytesEvent() => await this.AppendSerializedEventToExistingStream(_serializedData2097152);
+       //
+       ////[Benchmark]
+       //[InvocationCount(1)]
+       //public async Task Append4194304BytesEvent() => await this.AppendSerializedEventToExistingStream(_serializedData4194304);
+       //
+       ////[Benchmark]
+       //[InvocationCount(1)]
+       //public async Task Append8388608BytesEvent() => await this.AppendSerializedEventToExistingStream(_serializedData8388608);
 
         [Benchmark]
         [InvocationCount(1)]
